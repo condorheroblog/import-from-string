@@ -1,9 +1,11 @@
+import { name } from "../../package.json";
 import type { Plugin } from "esbuild";
-import { isAbsolute } from "node:path";
+import { isAbsolute, join } from "node:path";
+import { pathToFileURL } from "node:url";
 
 export function externalPlugin(): Plugin {
 	return {
-		name: "esbuild:external-plugin",
+		name: `[${name}]:external-plugin`,
 		setup(ctx) {
 			ctx.onResolve({ filter: /.*/ }, async (args) => {
 				if (args.path[0] === "." || isAbsolute(args.path)) {
@@ -19,7 +21,7 @@ export function externalPlugin(): Plugin {
 				 */
 				const { resolve } = await import("import-meta-resolve");
 				return {
-					path: resolve(args.path, import.meta.url),
+					path: resolve(args.path, pathToFileURL(join(args.resolveDir, "__TEMP__.js")).href),
 					external: true,
 				};
 			});

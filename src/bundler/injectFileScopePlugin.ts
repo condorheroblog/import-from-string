@@ -1,3 +1,4 @@
+import { name } from "../../package.json";
 import type { Plugin, Loader } from "esbuild";
 import { promises } from "node:fs";
 import { extname } from "node:path";
@@ -14,7 +15,7 @@ function inferLoader(ext: string): Loader {
 
 export function injectFileScopePlugin(): Plugin {
 	return {
-		name: "esbuild:inject-file-scope",
+		name: `[${name}]:inject-file-scope`,
 		setup(build) {
 			build.initialOptions.define = {
 				...build.initialOptions.define,
