@@ -54,36 +54,38 @@ export async function importFromString(code: string, options: ImportFromStringOp
 
 	const absolutePath = join(dirname, filename);
 
-	let bundled;
+	let result = code;
 	if (!skipBuild) {
 		const bundledResult = await buildBundler({
 			stdin: {
 				contents: code,
 				resolveDir: dirname,
 				loader: "js",
-				...options?.esbuildOptions?.stdin,
 			},
+			...options?.esbuildOptions,
 		});
+
 		if (!bundledResult.outputFiles) {
 			throw new Error(`[${name}] no output files`);
 		}
-		bundled = bundledResult.outputFiles[0].text;
-	} else {
-		bundled = code;
+
+		const bundled = bundledResult.outputFiles[0].text;
+
+		const transformCode = transformSync(bundled, {
+			format: "esm",
+			define: {
+				[IMPORT_META_URL_VAR_NAME]: JSON.stringify(pathToFileURL(absolutePath).href),
+				...options.transformOptions?.define,
+			},
+			...options.transformOptions,
+		});
+
+		result = transformCode.code;
 	}
 
-	const result = transformSync(bundled, {
-		format: "esm",
-		define: {
-			[IMPORT_META_URL_VAR_NAME]: JSON.stringify(pathToFileURL(absolutePath).href),
-			...options.transformOptions?.define,
-		},
-		...options.transformOptions,
-	});
-
 	try {
-		return import(`data:text/javascript;base64,${Buffer.from(result.code).toString("base64")}`);
+		return import(`data:text/javascript;base64,${Buffer.from(result).toString("base64")}`);
 	} catch (error) {
-		throw new Error(result.code);
+		throw new Error(result);
 	}
 }

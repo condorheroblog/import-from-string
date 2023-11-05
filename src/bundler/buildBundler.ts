@@ -12,7 +12,7 @@ export async function buildBundler(esbuildOptions: BuildOptions = {}) {
 		legalComments: "none",
 		logLevel: "silent",
 		metafile: true,
-		plugins: [externalPlugin(), injectFileScopePlugin(), ...(esbuildOptions?.plugins ?? [])],
+		plugins: [externalPlugin(), injectFileScopePlugin()],
 		...esbuildOptions,
 	});
 
