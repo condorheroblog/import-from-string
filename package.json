@@ -27,7 +27,6 @@
 		"dist"
 	],
 	"scripts": {
-		"postinstall": "simple-git-hooks",
 		"prepublishOnly": "nr build",
 		"dev": "esno index.ts",
 		"lint": "eslint .",
