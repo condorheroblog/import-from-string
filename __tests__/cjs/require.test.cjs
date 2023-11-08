@@ -84,6 +84,16 @@ exports.greet = code
 		expect(res).toBe(process.cwd());
 	});
 
+	it("should access __dirname", () => {
+		const res = requireFromString("module.exports = __dirname");
+		expect(res).toBe(__dirname);
+	});
+
+	it("should access __filename", () => {
+		const res = requireFromString("module.exports = __filename", { filename: "x.js" });
+		expect(res).toBe(__dirname + "/x.js");
+	});
+
 	it("should use relative filename in error stack trace", () => {
 		const filename = "foo.js";
 		const relativeDirname = relative(process.cwd(), __dirname);
