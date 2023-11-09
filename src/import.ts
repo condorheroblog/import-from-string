@@ -57,12 +57,13 @@ export async function importFromString(code: string, options: ImportFromStringOp
 	let result = code;
 	if (!skipBuild) {
 		const bundledResult = await buildBundler({
+			...options?.esbuildOptions,
 			stdin: {
 				contents: code,
 				resolveDir: dirname,
 				loader: "js",
+				...options?.esbuildOptions?.stdin,
 			},
-			...options?.esbuildOptions,
 		});
 
 		if (!bundledResult.outputFiles) {
@@ -73,11 +74,11 @@ export async function importFromString(code: string, options: ImportFromStringOp
 
 		const transformCode = transformSync(bundled, {
 			format: "esm",
+			...options.transformOptions,
 			define: {
 				[IMPORT_META_URL_VAR_NAME]: JSON.stringify(pathToFileURL(absolutePath).href),
 				...options.transformOptions?.define,
 			},
-			...options.transformOptions,
 		});
 
 		result = transformCode.code;
