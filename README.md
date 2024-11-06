@@ -27,7 +27,7 @@ npm install import-from-string
 ### ESM
 
 ```mjs
-import { requireFromString, importFromString } from "import-from-string";
+import { importFromString, requireFromString } from "import-from-string";
 
 const cjs = requireFromString("module.exports = 'Hi World!'");
 console.log(cjs); // Hi World!
@@ -96,7 +96,6 @@ Type: `boolean`\
 Default: `false`
 
 skip esbuild build.
-
 
 ### requireFromString(code, options?)
 

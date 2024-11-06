@@ -1,4 +1,5 @@
-import { resolve, dirname } from "node:path";
+import { dirname, resolve } from "node:path";
+import process from "node:process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const FILE_URL_PROTOCOL = "file:";
@@ -34,13 +35,14 @@ export const ensurePath = (value: string) => (isFileURL(value) ? fileURLToPath(v
  *
  * @returns `true` if the current context is in an ES module scope, `false` otherwise.
  */
-export const isInESModuleScope = () => {
+export function isInESModuleScope() {
 	try {
 		return module === undefined;
-	} catch {
+	}
+	catch {
 		return true;
 	}
-};
+}
 
 /**
  * Internal function names used to filter call sites when determining the caller's directory name.
@@ -52,11 +54,11 @@ const internalFunctionNames = ["getCallerDirname", "requireFromString", "importF
  *
  * @returns The directory name of the caller.
  */
-export const getCallerDirname = (): string => {
+export function getCallerDirname(): string {
 	const __prepareStackTrace = Error.prepareStackTrace;
 	Error.prepareStackTrace = (_err, stackTraces) => stackTraces;
 	// @ts-expect-error: safe to ignore
-	const callSites = (new Error().stack as NodeJS.CallSite[]).filter((callSite) => {
+	const callSites = (new Error("dummy message").stack as NodeJS.CallSite[]).filter((callSite) => {
 		const functionName = callSite.getFunctionName();
 		return functionName === null || !internalFunctionNames.includes(functionName);
 	});
@@ -64,7 +66,7 @@ export const getCallerDirname = (): string => {
 	const caller = callSites[0];
 	const callerFilename = caller.getFileName() ?? process.argv[1];
 	return dirname(ensurePath(callerFilename));
-};
+}
 
 /**
  * Retrieves an array of node_modules paths starting from the given file path and going up the directory tree.

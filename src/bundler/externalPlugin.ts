@@ -1,7 +1,7 @@
-import { name } from "../../package.json";
 import type { Plugin } from "esbuild";
 import { isAbsolute, join } from "node:path";
 import { pathToFileURL } from "node:url";
+import { name } from "../../package.json";
 
 export function externalPlugin(): Plugin {
 	return {
@@ -31,7 +31,8 @@ export function externalPlugin(): Plugin {
 						// Most like importing from node_modules and builtin modules, mark external
 						external: true,
 					};
-				} else {
+				}
+				else {
 					return {
 						external: true,
 					};

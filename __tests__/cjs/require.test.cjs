@@ -1,11 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
-const { dirname, join, relative } = require("node:path");
 const { homedir } = require("node:os");
-
+const { dirname, join, relative } = require("node:path");
 const { requireFromString } = require("#dist/index.cjs");
 
-describe(requireFromString.name + "in CommonJS Module", () => {
+describe(`${requireFromString.name}in CommonJS Module`, () => {
 	it("should work with `module.exports`", () => {
 		const res = requireFromString("module.exports = 'hi'");
 		expect(res).toBe("hi");
@@ -50,14 +49,14 @@ exports.greet = code
 `;
 		const res = requireFromString(code);
 		expect(res).toMatchInlineSnapshot(`
-		{
-		  "greet": "var Greet = /* @__PURE__ */ ((Greet2) => {
-		  Greet2[Greet2[\\"Hi\\"] = 0] = \\"Hi\\";
-		  return Greet2;
-		})(Greet || {});
-		",
-		}
-	`);
+			{
+			  "greet": "var Greet = /* @__PURE__ */ ((Greet2) => {
+			  Greet2[Greet2["Hi"] = 0] = "Hi";
+			  return Greet2;
+			})(Greet || {});
+			",
+			}
+		`);
 	});
 
 	it("should work with dynamic import module", async () => {
@@ -71,12 +70,12 @@ exports.greet = code
 	`;
 		const res = await requireFromString(code);
 		expect(res).toMatchInlineSnapshot(`
-		"var Greet = /* @__PURE__ */ ((Greet2) => {
-		  Greet2[Greet2[\\"Hi\\"] = 0] = \\"Hi\\";
-		  return Greet2;
-		})(Greet || {});
-		"
-	`);
+			"var Greet = /* @__PURE__ */ ((Greet2) => {
+			  Greet2[Greet2["Hi"] = 0] = "Hi";
+			  return Greet2;
+			})(Greet || {});
+			"
+		`);
 	});
 
 	it("should access globals", () => {
@@ -91,7 +90,7 @@ exports.greet = code
 
 	it("should access __filename", () => {
 		const res = requireFromString("module.exports = __filename", { filename: "x.js" });
-		expect(res).toBe(__dirname + "/x.js");
+		expect(res).toBe(`${__dirname}/x.js`);
 	});
 
 	it("should use relative filename in error stack trace", () => {
@@ -99,13 +98,15 @@ exports.greet = code
 		const relativeDirname = relative(process.cwd(), __dirname);
 		const relativeFilename = join(relativeDirname, filename);
 		try {
-			requireFromString('throw new Error("boom")', {
+			requireFromString("throw new Error(\"boom\")", {
 				filename,
 			});
-		} catch (error) {
+		}
+		catch (error) {
 			if (error instanceof Error) {
 				expect(error.stack).toMatch(`${relativeFilename}:`);
-			} else {
+			}
+			else {
 				throw error;
 			}
 		}
@@ -114,20 +115,22 @@ exports.greet = code
 	it("should use absolute filename in error stack trace", () => {
 		const filename = join(homedir(), "foo", "bar", "baz.js");
 		try {
-			requireFromString('throw new Error("boom")', {
+			requireFromString("throw new Error(\"boom\")", {
 				filename,
 			});
-		} catch (error) {
+		}
+		catch (error) {
 			if (error instanceof Error) {
 				expect(error.stack).toMatch(`${filename}:`);
-			} else {
+			}
+			else {
 				throw error;
 			}
 		}
 	});
 
 	it("should does't work ESM module", () => {
-		const res = () => requireFromString(`export default 111`);
-		expect(res).toThrowErrorMatchingInlineSnapshot("\"Unexpected token 'export'\"");
+		const res = () => requireFromString("export default 111");
+		expect(res).toThrowErrorMatchingInlineSnapshot("[SyntaxError: Unexpected token 'export']");
 	});
 });

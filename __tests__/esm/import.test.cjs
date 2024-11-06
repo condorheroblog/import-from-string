@@ -1,8 +1,9 @@
 import { describe, it } from "vitest";
 
-const { importFromString } = require("#dist/index.cjs");
 const { dirname, join } = require("node:path");
+
 const { pathToFileURL } = require("node:url");
+const { importFromString } = require("#dist/index.cjs");
 
 describe(`${importFromString.name} in ESM module`, () => {
 	it("should work with named export", async ({ expect }) => {
@@ -48,12 +49,12 @@ describe(`${importFromString.name} in ESM module`, () => {
 	`;
 		const res = await importFromString(code);
 		expect(res.default).toMatchInlineSnapshot(`
-	      "var Greet = /* @__PURE__ */ ((Greet2) => {
-	        Greet2[Greet2[\\"Hi\\"] = 0] = \\"Hi\\";
-	        return Greet2;
-	      })(Greet || {});
-	      "
-	    `);
+			"var Greet = /* @__PURE__ */ ((Greet2) => {
+			  Greet2[Greet2["Hi"] = 0] = "Hi";
+			  return Greet2;
+			})(Greet || {});
+			"
+		`);
 	});
 
 	it("should be able to use dynamic import", async ({ expect }) => {
@@ -74,7 +75,7 @@ describe(`${importFromString.name} in ESM module`, () => {
 	      export const dirname = __dirname
 	    `);
 		};
-		expect(res).rejects.toThrowErrorMatchingInlineSnapshot('"__dirname is not defined in ES module scope"');
+		expect(res).rejects.toThrowErrorMatchingInlineSnapshot("[ReferenceError: __dirname is not defined in ES module scope]");
 	});
 
 	it("should not access __filename", async ({ expect }) => {
@@ -83,7 +84,7 @@ describe(`${importFromString.name} in ESM module`, () => {
 	      export const filename = __filename
 	    `);
 		};
-		expect(res).rejects.toThrowErrorMatchingInlineSnapshot('"__filename is not defined in ES module scope"');
+		expect(res).rejects.toThrowErrorMatchingInlineSnapshot("[ReferenceError: __filename is not defined in ES module scope]");
 	});
 
 	it("should access globals", async ({ expect }) => {
@@ -101,13 +102,15 @@ describe(`${importFromString.name} in ESM module`, () => {
 	it("should use relative filename in error stack trace", async ({ expect }) => {
 		const filename = "foo.mjs";
 		try {
-			await importFromString('throw new Error("boom")', {
+			await importFromString("throw new Error(\"boom\")", {
 				filename,
 			});
-		} catch (err) {
+		}
+		catch (err) {
 			if (err instanceof Error) {
-				expect(err.stack).toMatch(`data:text/javascript;`);
-			} else {
+				expect(err.stack).toMatch("data:text/javascript;");
+			}
+			else {
 				throw err;
 			}
 		}

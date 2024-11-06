@@ -1,15 +1,17 @@
-import { name } from "../../package.json";
-import type { Plugin, Loader } from "esbuild";
+import type { Loader, Plugin } from "esbuild";
 import { promises } from "node:fs";
 import { extname } from "node:path";
 import { pathToFileURL } from "node:url";
+import { name } from "../../package.json";
 
 export const IMPORT_META_URL_VAR_NAME = "__injected_import_meta_url__";
 export const JS_EXT_RE = /\.([mc]?[tj]s|[tj]sx)$/;
 
 export function inferLoader(ext: string): Loader {
-	if (ext === ".mjs" || ext === ".cjs") return "js";
-	if (ext === ".mts" || ext === ".cts") return "ts";
+	if (ext === ".mjs" || ext === ".cjs")
+		return "js";
+	if (ext === ".mts" || ext === ".cts")
+		return "ts";
 	return ext.slice(1) as Loader;
 }
 

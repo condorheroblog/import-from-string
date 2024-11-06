@@ -1,7 +1,7 @@
-import { externalPlugin } from "./externalPlugin";
-import { injectFileScopePlugin } from "./injectFileScopePlugin";
 import type { BuildOptions } from "esbuild";
 import { build } from "esbuild";
+import { externalPlugin } from "./externalPlugin";
+import { injectFileScopePlugin } from "./injectFileScopePlugin";
 
 export async function buildBundler(esbuildOptions: BuildOptions = {}) {
 	const bundledResult = await build({

@@ -1,22 +1,22 @@
-import { getNodeModulesPaths, getCallerDirname, isFileURL, ensureFileURL, ensurePath } from "#src";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { ensureFileURL, ensurePath, getCallerDirname, getNodeModulesPaths, isFileURL } from "#src";
 import { describe, it } from "vitest";
 
-describe(`utils`, () => {
+describe("utils", () => {
 	it(isFileURL.name, async ({ expect }) => {
 		expect(isFileURL("github")).toBeFalsy();
 		expect(isFileURL("file:")).toBeTruthy();
 	});
 
 	it(ensureFileURL.name, async ({ expect }) => {
-		expect(ensureFileURL("file:///ant/i")).toMatchInlineSnapshot('"file:///ant/i"');
+		expect(ensureFileURL("file:///ant/i")).toMatchInlineSnapshot("\"file:///ant/i\"");
 		expect(ensureFileURL("ant/i")).toMatch("file:");
 	});
 
 	it(ensurePath.name, async ({ expect }) => {
-		expect(ensurePath("file:///ant/i")).toMatchInlineSnapshot('"/ant/i"');
-		expect(ensurePath("ant/i")).toMatchInlineSnapshot('"ant/i"');
+		expect(ensurePath("file:///ant/i")).toMatchInlineSnapshot("\"/ant/i\"");
+		expect(ensurePath("ant/i")).toMatchInlineSnapshot("\"ant/i\"");
 	});
 
 	it(getCallerDirname.name, async ({ expect }) => {

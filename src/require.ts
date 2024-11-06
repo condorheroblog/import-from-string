@@ -1,6 +1,6 @@
-import { isInESModuleScope, getCallerDirname, getNodeModulesPaths } from "./utils";
 import { Module } from "node:module";
 import { join } from "node:path";
+import { getCallerDirname, getNodeModulesPaths, isInESModuleScope } from "./utils";
 
 /**
  * Options for requiring code from a string.
@@ -10,20 +10,20 @@ export interface RequireFromStringOptions {
 	 * The virtual file name of the code to import.
 	 * @default `${Date.now()}.js`
 	 */
-	filename?: string;
+	filename?: string
 	/**
 	 * The directory name to resolve dependencies relative to.
 	 * @default The directory where the function is called
 	 */
-	dirname?: string;
+	dirname?: string
 	/**
 	 * An array of additional paths to append when resolving modules.
 	 */
-	appendPaths?: string[];
+	appendPaths?: string[]
 	/**
 	 * An array of additional paths to prepend when resolving modules.
 	 */
-	prependPaths?: string[];
+	prependPaths?: string[]
 }
 
 /**
@@ -35,9 +35,9 @@ export interface RequireFromStringOptions {
  * @throws If the code is empty or encounters an error during execution.
  */
 
-export const requireFromString = (code: string, options: RequireFromStringOptions = {}) => {
+export function requireFromString(code: string, options: RequireFromStringOptions = {}) {
 	if (!code.length) {
-		throw new Error(`code cannot be empty`);
+		throw new Error("code cannot be empty");
 	}
 
 	const filename = options?.filename ?? `${Date.now()}.js`;
@@ -50,7 +50,8 @@ export const requireFromString = (code: string, options: RequireFromStringOption
 	if (isInESModuleScope()) {
 		mainModule = undefined;
 		mainModulePaths = getNodeModulesPaths(absolutePath);
-	} else {
+	}
+	else {
 		mainModulePaths = mainModule?.paths ?? getNodeModulesPaths(absolutePath);
 		mainModule = require.main;
 	}
@@ -80,4 +81,4 @@ export const requireFromString = (code: string, options: RequireFromStringOption
 
 	contextModule.loaded = true;
 	return contextModule.exports;
-};
+}

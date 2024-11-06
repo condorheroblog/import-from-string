@@ -1,10 +1,12 @@
+import type { BuildOptions, TransformOptions } from "esbuild";
+import { Buffer } from "node:buffer";
+import { join } from "node:path";
+import { pathToFileURL } from "node:url";
+import { transformSync } from "esbuild";
+
 import { name } from "../package.json";
 import { buildBundler, IMPORT_META_URL_VAR_NAME } from "./bundler";
 import { getCallerDirname } from "./utils";
-import type { TransformOptions, BuildOptions } from "esbuild";
-import { transformSync } from "esbuild";
-import { join } from "node:path";
-import { pathToFileURL } from "node:url";
 
 /**
  * Options for importing code from a string.
@@ -14,25 +16,25 @@ export interface ImportFromStringOptions {
 	 * The virtual file name of the code to import.
 	 * @default `${Date.now()}.js`
 	 */
-	filename?: string;
+	filename?: string
 	/**
 	 * The directory name to resolve dependencies relative to.
 	 * @default The directory where the function is called
 	 */
-	dirname?: string;
+	dirname?: string
 	/**
 	 * esbuild transform options.
 	 */
-	transformOptions?: TransformOptions;
+	transformOptions?: TransformOptions
 	/**
 	 * esbuild options.
 	 */
-	esbuildOptions?: BuildOptions;
+	esbuildOptions?: BuildOptions
 	/**
 	 * skip esbuild build.
 	 * @default false
 	 */
-	skipBuild?: boolean;
+	skipBuild?: boolean
 }
 
 /**
@@ -45,7 +47,7 @@ export interface ImportFromStringOptions {
  */
 export async function importFromString(code: string, options: ImportFromStringOptions = {}) {
 	if (!code.length) {
-		throw new Error(`code cannot be empty`);
+		throw new Error("code cannot be empty");
 	}
 
 	const filename = options?.filename ?? `${Date.now()}.js`;
@@ -86,7 +88,8 @@ export async function importFromString(code: string, options: ImportFromStringOp
 
 	try {
 		return import(`data:text/javascript;base64,${Buffer.from(result).toString("base64")}`);
-	} catch (error) {
+	}
+	catch {
 		throw new Error(result);
 	}
 }
